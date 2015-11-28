@@ -16,28 +16,30 @@ class ViewController: UIViewController {
     var userIsTyping = false
     // can infer by its own
    // var userIsTyping: Bool = false
-
+    
+    var brain = CalculatorBrain()
+    
+//
     @IBAction func operate(sender: UIButton) {
-        let operation = sender.currentTitle!
         if userIsTyping{
             enter()
         }
-        switch operation {
-        case "×": performOperation{ $0 * $1}
-        case "÷": performOperation{ $1 / $0}
-        case "+": performOperation{ $0 + $1}
-        case "−": performOperation{ $1 - $0}
-        default :break
+        if let operation = sender.currentTitle{
+            if let result = brain.performOperations(operation){
+                displayValue = result
+            }else{
+                displayValue = 0
+            }
         }
     }
-    
-    
-    func performOperation(operation: (Double,Double)->Double){
-        if operandStack.count>=2{
-            displayValue = operation(operandStack.removeLast(),operandStack.removeLast())
-            enter()
-        }
-    }
+//
+//    
+//    func performOperation(operation: (Double,Double)->Double){
+//        if operandStack.count>=2{
+//            displayValue = operation(operandStack.removeLast(),operandStack.removeLast())
+//            enter()
+//        }
+//    }
     @IBAction func appendDigit(sender: UIButton) {
         let digit = sender.currentTitle! // unwrap the optional and crash if its nil
         if userIsTyping{
@@ -50,11 +52,16 @@ class ViewController: UIViewController {
 //        print("digit = + \(digit)")
     }
     
-    var operandStack = Array<Double>()
+   // var operandStack = Array<Double>()
     @IBAction func enter() {
         userIsTyping = false
-        operandStack.append(displayValue)
-        print("operandStack + \(operandStack)")
+        //operandStack.append(displayValue)
+        if let result  =  brain.pushOperand(displayValue){
+            displayValue = result
+        }else{
+            displayValue = 0
+        }
+        //print("operandStack + \(operandStack)")
     }
     
     var displayValue: Double{
